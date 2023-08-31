@@ -704,7 +704,7 @@ void VK_CreatePipelines(vklogicaldevice_t* device)
 			& rasterization_info_alias, //pRasterizationState
 			& no_multisample_info, //pMultisampleState
 			& depth_test_no_write_state, //pDepthStencilState
-			& normal_blend_info, //pColorBlendState
+			& additive_blend_info, //pColorBlendState
 			& viewport_dynamic_info, //pDynamicState
 			alias_pipeline_layout, //layout
 		},
