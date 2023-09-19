@@ -361,3 +361,6 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsd
+
+# this is a little dumb, but since the working dir is part of the repo, exclude my vk_out.txt debug file
+vk_out.txt
