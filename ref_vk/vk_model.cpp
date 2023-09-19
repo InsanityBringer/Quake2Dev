@@ -40,7 +40,7 @@ int		mod_numknown;
 // the inline * models from the current map are kept seperate
 model_t	mod_inline[MAX_MOD_KNOWN];
 
-int		registration_sequence;
+int		registration_sequence = 1;
 
 //Model used for the muzzle flash feature
 model_t flash_model;
