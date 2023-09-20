@@ -207,7 +207,7 @@ void R_CreateLogicalDevice(vkphysdevice_t* physdevice, vklogicaldevice_t* device
 
 		VkBool32 presentSupportedW;
 		VkResult res = vkGetPhysicalDeviceSurfaceSupportKHR(physdevice->handle, i, vk_state.surf, &presentSupportedW);
-		if (res == VK_SUCCESS && presentSupportedW)
+		if (presentqueuefamily == -1 && res == VK_SUCCESS && presentSupportedW)
 			presentqueuefamily = i;
 	}
 
@@ -266,12 +266,16 @@ void VK_CreateCommandPools(vklogicaldevice_t* device)
 
 	//poolinfo.flags = VK_COMMAND_POOL_CREATE_TRANSIENT_BIT;
 	VK_CHECK(vkCreateCommandPool(device->handle, &poolinfo, NULL, &device->resourcepool));
+
+	poolinfo.queueFamilyIndex = device->presentqueuefamily;
+	VK_CHECK(vkCreateCommandPool(device->handle, &poolinfo, NULL, &device->presentpool));
 }
 
 void VK_DestroyCommandPools(vklogicaldevice_t* device)
 {
 	vkDestroyCommandPool(device->handle, device->resourcepool, NULL);
 	vkDestroyCommandPool(device->handle, device->drawpool, NULL);
+	vkDestroyCommandPool(device->handle, device->presentpool, NULL);
 }
 
 //Creates a device and all needed resources derived from the device.
@@ -416,6 +420,7 @@ void VK_CreateResources(vklogicaldevice_t* device)
 
 	VK_CHECK(vkCreateSemaphore(device->handle, &info, NULL, &device->swap_acquire));
 	VK_CHECK(vkCreateSemaphore(device->handle, &info, NULL, &device->swap_present));
+	VK_CHECK(vkCreateSemaphore(device->handle, &info, NULL, &device->swap_present_pre));
 
 	VkFenceCreateInfo fenceinfo = {};
 	fenceinfo.sType = VK_STRUCTURE_TYPE_FENCE_CREATE_INFO;
@@ -428,6 +433,7 @@ void VK_DestroyResources(vklogicaldevice_t* device)
 {
 	vkDestroySemaphore(device->handle, device->swap_acquire, NULL);
 	vkDestroySemaphore(device->handle, device->swap_present, NULL);
+	vkDestroySemaphore(device->handle, device->swap_present_pre, NULL);
 	vkDestroyFence(device->handle, device->complete_fence, NULL);
 
 	VK_DestroyStage(device);

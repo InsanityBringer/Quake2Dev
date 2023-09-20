@@ -211,6 +211,9 @@
       <SuppressStartupBanner>true</SuppressStartupBanner>
       <OutputFile>.\debug/quake2.bsc</OutputFile>
     </Bscmake>
+    <Manifest>
+      <EnableDpiAwareness>PerMonitorHighDPIAware</EnableDpiAwareness>
+    </Manifest>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <Midl>

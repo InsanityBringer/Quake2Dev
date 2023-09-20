@@ -72,6 +72,7 @@ int		r_viewcluster, r_viewcluster2, r_oldviewcluster, r_oldviewcluster2;
 //command buffers
 int cmdbuffernum;
 VkCommandBuffer cmdbuffers[NUM_STAGING_BUFFERS];
+VkCommandBuffer presentcmdbuffers[NUM_STAGING_BUFFERS];
 VkBuffer globals_buffer;
 vkallocinfo_t globals_buffer_memory;
 vkshaderglobal_t* globals_ptr;
@@ -150,7 +151,7 @@ uint32_t R_RotateForEntity(entity_t* e, entitymodelview_t** modelview)
 	return offset;
 }
 
-VkCommandBuffer currentcmdbuffer;
+VkCommandBuffer currentcmdbuffer, currentpresentcmdbuffer;
 
 void R_DrawNullModel()
 {
@@ -638,6 +639,12 @@ qboolean R_Init(void* hinstance, void* hWnd)
 
 	VK_CHECK(vkAllocateCommandBuffers(vk_state.device.handle, &cmdbufferinfo, cmdbuffers));
 
+	if (!vk_state.device.sharedqueues)
+	{
+		cmdbufferinfo.commandPool = vk_state.device.presentpool;
+		VK_CHECK(vkAllocateCommandBuffers(vk_state.device.handle, &cmdbufferinfo, presentcmdbuffers));
+	}
+
 	VK_CreateOrthoBuffer();
 	VK_InitImages();
 	R_InitParticleTexture();
@@ -682,7 +689,9 @@ void R_Shutdown(void)
 	//VK_FlushStage(&vk_state.device.stage); //undone. Draw_ calls potentially can stage new data
 	vkResetFences(vk_state.device.handle, 1, &vk_state.device.complete_fence);
 
-	vkFreeCommandBuffers(vk_state.device.handle, vk_state.device.drawpool, 2, cmdbuffers);
+	vkFreeCommandBuffers(vk_state.device.handle, vk_state.device.drawpool, NUM_STAGING_BUFFERS, cmdbuffers);
+	if (!vk_state.device.sharedqueues)
+		vkFreeCommandBuffers(vk_state.device.handle, vk_state.device.presentpool, NUM_STAGING_BUFFERS, presentcmdbuffers);
 	vkDestroyBuffer(vk_state.device.handle, globals_buffer, nullptr);
 	VK_FreeMemory(&vk_state.device.host_visible_device_local_pool, &globals_buffer_memory);
 
@@ -1020,10 +1029,15 @@ void R_BeginFrame(float camera_separation)
 	currentcmdbuffer = cmdbuffers[cmdbuffernum];
 
 	VK_CHECK(vkResetCommandBuffer(currentcmdbuffer, 0));
+	if (!vk_state.device.sharedqueues)
+	{
+		currentpresentcmdbuffer = presentcmdbuffers[cmdbuffernum];
+		VK_CHECK(vkResetCommandBuffer(currentpresentcmdbuffer, 0));
+	}
 
 	VkImageView colorview;
 	colorimg = VK_GetSwapchainImage(vk_state.device.swap_acquire, &colorview);
-	if (colorimg == VK_NULL_HANDLE)
+	if (!colorimg || *colorimg == VK_NULL_HANDLE)
 	{
 		//wait, if you can't render, this won't be seen...
 		ri.Con_Printf(PRINT_ALL, "R_BeginFrame: VK_GetSwapchainImage failed to return");
@@ -1037,6 +1051,10 @@ void R_BeginFrame(float camera_separation)
 	begininfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_BEGIN_INFO;
 	begininfo.flags = VK_COMMAND_BUFFER_USAGE_ONE_TIME_SUBMIT_BIT;
 	VK_CHECK(vkBeginCommandBuffer(currentcmdbuffer, &begininfo));
+	if (!vk_state.device.sharedqueues)
+	{
+		VK_CHECK(vkBeginCommandBuffer(currentpresentcmdbuffer, &begininfo));
+	}
 
 	//Before submitting the rendering start, need to transition the swapchain image. 
 	VkImageMemoryBarrier2 swapchainbarrier = {};
@@ -1172,6 +1190,13 @@ void R_EndFrame()
 	swapchainbarrier.subresourceRange.layerCount = 1;
 	swapchainbarrier.subresourceRange.levelCount = 1;
 
+	//If shared queues aren't used, release the image from the rendering command buffer here. 
+	if (!vk_state.device.sharedqueues)
+	{
+		swapchainbarrier.srcQueueFamilyIndex = vk_state.device.drawqueuefamily;
+		swapchainbarrier.dstQueueFamilyIndex = vk_state.device.presentqueuefamily;
+	}
+
 	VkDependencyInfo barrierinfo = {};
 	barrierinfo.sType = VK_STRUCTURE_TYPE_DEPENDENCY_INFO;
 	barrierinfo.imageMemoryBarrierCount = 1;
@@ -1179,16 +1204,41 @@ void R_EndFrame()
 
 	vkCmdPipelineBarrier2(currentcmdbuffer, &barrierinfo);
 
-	vkEndCommandBuffer(currentcmdbuffer);
+	//Acquire the image in the present command buffer
+	if (!vk_state.device.sharedqueues)
+	{
+		swapchainbarrier = {};
+		swapchainbarrier.sType = VK_STRUCTURE_TYPE_IMAGE_MEMORY_BARRIER_2;
+		swapchainbarrier.image = *colorimg;
+		swapchainbarrier.oldLayout = VK_IMAGE_LAYOUT_COLOR_ATTACHMENT_OPTIMAL;
+		swapchainbarrier.newLayout = VK_IMAGE_LAYOUT_PRESENT_SRC_KHR;
+		swapchainbarrier.subresourceRange.aspectMask = VK_IMAGE_ASPECT_COLOR_BIT;
+		swapchainbarrier.subresourceRange.baseArrayLayer = 0;
+		swapchainbarrier.subresourceRange.baseMipLevel = 0;
+		swapchainbarrier.subresourceRange.layerCount = 1;
+		swapchainbarrier.subresourceRange.levelCount = 1;
+		swapchainbarrier.srcQueueFamilyIndex = vk_state.device.drawqueuefamily;
+		swapchainbarrier.dstQueueFamilyIndex = vk_state.device.presentqueuefamily;
+
+		vkCmdPipelineBarrier2(currentpresentcmdbuffer, &barrierinfo);
+
+		VK_CHECK(vkEndCommandBuffer(currentpresentcmdbuffer));
+	}
+
+	VK_CHECK(vkEndCommandBuffer(currentcmdbuffer));
 
 	VkSemaphoreSubmitInfo waitinfo = {};
 	waitinfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
 	waitinfo.semaphore = vk_state.device.swap_acquire;
+	waitinfo.stageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT_KHR;
 
 	VkSemaphoreSubmitInfo signalinfo = {};
-
 	signalinfo.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
-	signalinfo.semaphore = vk_state.device.swap_present;
+	if (vk_state.device.sharedqueues)
+		signalinfo.semaphore = vk_state.device.swap_present;
+	else
+		signalinfo.semaphore = vk_state.device.swap_present_pre;
+	//signalinfo.stageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT_KHR;
 
 	VkCommandBufferSubmitInfo bufferinfo = {};
 	bufferinfo.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO;
@@ -1203,7 +1253,48 @@ void R_EndFrame()
 	submitinfo.commandBufferInfoCount = 1;
 	submitinfo.pCommandBufferInfos = &bufferinfo;
 
-	VK_CHECK(vkQueueSubmit2(vk_state.device.drawqueue, 1, &submitinfo, vk_state.device.complete_fence));
+	if (vk_state.device.sharedqueues)
+	{
+		VK_CHECK(vkQueueSubmit2(vk_state.device.drawqueue, 1, &submitinfo, vk_state.device.complete_fence));
+	}
+	else
+	{
+		VK_CHECK(vkQueueSubmit2(vk_state.device.drawqueue, 1, &submitinfo, VK_NULL_HANDLE));
+	}
+
+	if (!vk_state.device.sharedqueues)
+	{
+		VkSemaphoreSubmitInfo signalinfopost = {};
+		signalinfopost.sType = VK_STRUCTURE_TYPE_SEMAPHORE_SUBMIT_INFO;
+		signalinfopost.semaphore = vk_state.device.swap_present;
+		//signalinfopost.stageMask = VK_PIPELINE_STAGE_2_COLOR_ATTACHMENT_OUTPUT_BIT_KHR;
+
+		VkCommandBufferSubmitInfo bufferinfopost = {};
+		bufferinfopost.sType = VK_STRUCTURE_TYPE_COMMAND_BUFFER_SUBMIT_INFO;
+		bufferinfopost.commandBuffer = currentpresentcmdbuffer;
+
+		submitinfo.waitSemaphoreInfoCount = 1;
+		submitinfo.pWaitSemaphoreInfos = &signalinfo;
+		submitinfo.signalSemaphoreInfoCount = 1;
+		submitinfo.pSignalSemaphoreInfos = &signalinfopost;
+		submitinfo.commandBufferInfoCount = 1;
+		submitinfo.pCommandBufferInfos = &bufferinfopost;
+
+		VK_CHECK(vkQueueSubmit2(vk_state.device.presentqueue, 1, &submitinfo, vk_state.device.complete_fence));
+	}
+
+	/*VkPipelineStageFlags dstStageMask = VK_PIPELINE_STAGE_COLOR_ATTACHMENT_OUTPUT_BIT;
+	VkSubmitInfo submitinfo = {};
+	submitinfo.sType = VK_STRUCTURE_TYPE_SUBMIT_INFO;
+	submitinfo.commandBufferCount = 1;
+	submitinfo.pCommandBuffers = &currentcmdbuffer;
+	submitinfo.signalSemaphoreCount = 1;
+	submitinfo.pSignalSemaphores = &vk_state.device.swap_present;
+	submitinfo.waitSemaphoreCount = 1;
+	submitinfo.pWaitSemaphores = &vk_state.device.swap_acquire;
+	submitinfo.pWaitDstStageMask = &dstStageMask;
+
+	VK_CHECK(vkQueueSubmit(vk_state.device.drawqueue, 1, &submitinfo, vk_state.device.complete_fence));*/
 
 	//Hack specifically for OBS. If I don't sync before present, the recording goes berserk. 
 	if (vk_sync->value)
@@ -1219,7 +1310,6 @@ void R_EndFrame()
 	VK_Present(vk_state.device.swap_present);
 
 	VK_FinishStage(&vk_state.device.stage);
-
 }
 
 /*

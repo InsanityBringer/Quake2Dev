@@ -414,7 +414,7 @@ typedef struct
 	qboolean sharedqueues;
 
 	//Command pools. ATM there's two of them, one for rendering commands, and one for additional commands like texture uploads.
-	VkCommandPool drawpool, resourcepool;
+	VkCommandPool drawpool, resourcepool, presentpool;
 
 	//Pipelines
 	VkPipeline screen_colored, screen_textured, world_lightmap, world_lightmap_unclamped, world_lightmap_only, brush_unlit;
@@ -449,7 +449,7 @@ typedef struct
 	vkstage_t stage;
 
 	//Semaphores for the swapchain
-	VkSemaphore swap_acquire, swap_present;
+	VkSemaphore swap_acquire, swap_present, swap_present_pre;
 	//Fence for synchronizing swapchain acquire
 	VkFence complete_fence;
 
