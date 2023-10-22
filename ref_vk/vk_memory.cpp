@@ -320,6 +320,10 @@ void VK_Memory_f()
 					ri.Con_Printf(PRINT_ALL, "    VK_MEMORY_PROPERTY_HOST_COHERENT_BIT\n");
 				if (vk_state.phys_device.memory.memoryTypes[j].propertyFlags & VK_MEMORY_PROPERTY_HOST_CACHED_BIT)
 					ri.Con_Printf(PRINT_ALL, "    VK_MEMORY_PROPERTY_HOST_CACHED_BIT\n");
+				if (vk_state.phys_device.memory.memoryTypes[j].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD)
+					ri.Con_Printf(PRINT_ALL, "    VK_MEMORY_PROPERTY_DEVICE_COHERENT_BIT_AMD\n");
+				if (vk_state.phys_device.memory.memoryTypes[j].propertyFlags & VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD)
+					ri.Con_Printf(PRINT_ALL, "    VK_MEMORY_PROPERTY_DEVICE_UNCACHED_BIT_AMD\n");
 			}
 		}
 	}
