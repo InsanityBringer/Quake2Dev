@@ -13,6 +13,9 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="Shader Source">
+      <UniqueIdentifier>{9ace432d-f682-4a64-8058-16330485dbcf}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="vk_local.h">
@@ -48,15 +51,6 @@
     <ClInclude Include="anorms.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shaders\world_lightmap_frag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shaders\world_lightmap_unclamped_frag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shaders\world_lightmap_vert.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="shaders\screen_textured_frag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -69,15 +63,6 @@
     <ClInclude Include="shaders\screen_colored_vert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="shaders\world_lightmap_only_frag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shaders\world_unlit_vert.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shaders\world_unlit_frag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="shaders\brush_lightmap_vert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -85,15 +70,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shaders\alias_vertexlit_vert.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shaders\world_unlit_warped_frag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shaders\world_sky_frag.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="shaders\world_sky_vert.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ref.h">
@@ -115,6 +91,36 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="shaders\particle_frag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\world_lightmap_frag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\world_lightmap_only.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\world_lightmap_only_frag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\world_lightmap_unclamped_frag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\world_lightmap_vert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\world_sky_frag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\world_sky_vert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\world_unlit_frag.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\world_unlit_vert.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="shaders\world_unlit_warped_frag.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
@@ -193,5 +199,70 @@
     <None Include="ref_vk.def">
       <Filter>Resource Files</Filter>
     </None>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="shaders\alias_vertexlit.frag">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\alias_vertexlit.vert">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\beam.vert">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\brush_lightmap.vert">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\generic_colored.frag">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\generic_textureonly.frag">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\particle.frag">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\particle.vert">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\screen_colored.vert">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\screen_textured.frag">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\screen_textured.vert">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\sprite_textured.frag">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\sprite_textured.vert">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_lightmap.frag">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_lightmap.vert">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_lightmap_only.frag">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_lightmap_unclamped.frag">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_sky.frag">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_sky.vert">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_unlit.frag">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_unlit.vert">
+      <Filter>Shader Source</Filter>
+    </CustomBuild>
   </ItemGroup>
 </Project>

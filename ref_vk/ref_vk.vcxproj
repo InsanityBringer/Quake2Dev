@@ -177,6 +177,7 @@
     <ClInclude Include="shaders\sprite_textured_frag.h" />
     <ClInclude Include="shaders\sprite_textured_vert.h" />
     <ClInclude Include="shaders\world_lightmap_frag.h" />
+    <ClInclude Include="shaders\world_lightmap_only.h" />
     <ClInclude Include="shaders\world_lightmap_only_frag.h" />
     <ClInclude Include="shaders\world_lightmap_unclamped_frag.h" />
     <ClInclude Include="shaders\world_lightmap_vert.h" />
@@ -221,6 +222,192 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="ref_vk.def" />
+    <CustomBuild Include="shaders\alias_vertexlit.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn alias_vertexlit_frag -o $(ProjectDir)shaders\alias_vertexlit_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling alias_vertexlit.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\alias_vertexlit_frag.h;%(Outputs)</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn alias_vertexlit_frag -o $(ProjectDir)shaders\alias_vertexlit_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling alias_vertexlit.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\alias_vertexlit_frag.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\alias_vertexlit.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn alias_vertexlit_vert -o $(ProjectDir)shaders\alias_vertexlit_vert.h %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\alias_vertexlit_vert.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn alias_vertexlit_vert -o $(ProjectDir)shaders\alias_vertexlit_vert.h %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\alias_vertexlit_vert.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\beam.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn beam_vert -o $(ProjectDir)shaders\beam_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling beam.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\beam_vert.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn beam_vert -o $(ProjectDir)shaders\beam_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling beam.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\beam_vert.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\brush_lightmap.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn brush_lightmap_vert -o $(ProjectDir)shaders\brush_lightmap_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling brush_lightmap.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\brush_lightmap_vert.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn brush_lightmap_vert -o $(ProjectDir)shaders\brush_lightmap_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling brush_lightmap.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\brush_lightmap_vert.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\generic_colored.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn generic_colored_frag -o $(ProjectDir)shaders\generic_colored_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling generic_colored.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\generic_colored_frag.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn generic_colored_frag -o $(ProjectDir)shaders\generic_colored_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling generic_colored.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\generic_colored_frag.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\generic_textureonly.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn generic_textureonly_frag -o $(ProjectDir)shaders\generic_textureonly_frag.h %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\generic_textureonly_frag.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn generic_textureonly_frag -o $(ProjectDir)shaders\generic_textureonly_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling generic_textureonly.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\generic_textureonly_frag.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\particle.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn particle_frag -o $(ProjectDir)shaders\particle_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling particle.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\particle_frag.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn particle_frag -o $(ProjectDir)shaders\particle_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling particle.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\particle_frag.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\particle.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn particle_vert -o $(ProjectDir)shaders\particle_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling particle.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\particle_vert.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn particle_vert -o $(ProjectDir)shaders\particle_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling particle.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\particle_vert.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\screen_colored.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn screen_colored_vert -o $(ProjectDir)shaders\screen_colored_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling screen_colored.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\screen_colored_vert.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn screen_colored_vert -o $(ProjectDir)shaders\screen_colored_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling screen_colored.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\screen_colored_vert.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\screen_textured.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn screen_textured_frag -o $(ProjectDir)shaders\screen_textured_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling screen_textured.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\screen_textured_frag.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn screen_textured_frag -o $(ProjectDir)shaders\screen_textured_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling screen_textured.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\screen_textured_frag.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\screen_textured.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn screen_textured_vert -o $(ProjectDir)shaders\screen_textured_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling screen_textured.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\screen_textured_vert.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn screen_textured_vert -o $(ProjectDir)shaders\screen_textured_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling screen_textured.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\screen_textured_vert.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\sprite_textured.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn sprite_textured_frag -o $(ProjectDir)shaders\sprite_textured_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling sprite_textured.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\sprite_textured_frag.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn sprite_textured_frag -o $(ProjectDir)shaders\sprite_textured_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling sprite_textured.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\sprite_textured_frag.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\sprite_textured.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn sprite_textured_vert -o $(ProjectDir)shaders\sprite_textured_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling sprite_textured.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\sprite_textured_vert.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn sprite_textured_vert -o $(ProjectDir)shaders\sprite_textured_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling sprite_textured.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\sprite_textured_vert.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_lightmap.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn world_lightmap_frag -o $(ProjectDir)shaders\world_lightmap_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling world_lightmap.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\world_lightmap_frag.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn world_lightmap_frag -o $(ProjectDir)shaders\world_lightmap_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling world_lightmap.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\world_lightmap_frag.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_lightmap.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn world_lightmap_vert -o $(ProjectDir)shaders\world_lightmap_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling world_lightmap.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\world_lightmap_vert.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn world_lightmap_vert -o $(ProjectDir)shaders\world_lightmap_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling world_lightmap.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\world_lightmap_vert.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_lightmap_only.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn world_lightmap_only_frag -o $(ProjectDir)shaders\world_lightmap_only_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling world_lightmap_only.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\world_lightmap_only_frag.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn world_lightmap_only_frag -o $(ProjectDir)shaders\world_lightmap_only_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling world_lightmap_only.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\world_lightmap_only_frag.h</Outputs>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_lightmap_unclamped.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn world_lightmap_unclamped_frag -o $(ProjectDir)shaders\world_lightmap_only_unclamped.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling world_lightmap_unclamped.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\world_lightmap_only_unclamped.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn world_lightmap_unclamped_frag -o $(ProjectDir)shaders\world_lightmap_only_unclamped.h %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\world_lightmap_only_unclamped.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling world_lightmap_unclamped.frag</Message>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_sky.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn world_sky_frag -o $(ProjectDir)shaders\world_sky_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling world_sky.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\world_sky_frag.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn world_sky_frag -o $(ProjectDir)shaders\world_sky_frag.h %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\world_sky_frag.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling world_sky.frag</Message>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_sky.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn world_sky_vert -o $(ProjectDir)shaders\world_sky_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling world_sky.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\world_sky_vert.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn world_sky_vert -o $(ProjectDir)shaders\world_sky_vert.h %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\world_sky_vert.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling world_sky.vert</Message>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_unlit.frag">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn world_unlit_frag -o $(ProjectDir)shaders\world_unlit_frag.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling world_unlit.frag</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\world_unlit_frag.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn world_unlit_frag -o $(ProjectDir)shaders\world_unlit_frag.h %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\world_unlit_frag.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling world_unlit.frag</Message>
+    </CustomBuild>
+    <CustomBuild Include="shaders\world_unlit.vert">
+      <FileType>Document</FileType>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">glslangValidator --target-env vulkan1.3 --vn world_unlit_vert -o $(ProjectDir)shaders\world_unlit_vert.h %(FullPath)</Command>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Compiling world_unlit.vert</Message>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">$(ProjectDir)shaders\world_unlit_vert.h</Outputs>
+      <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">glslangValidator --target-env vulkan1.3 --vn world_unlit_vert -o $(ProjectDir)shaders\world_unlit_vert.h %(FullPath)</Command>
+      <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">$(ProjectDir)shaders\world_unlit_vert.h</Outputs>
+      <Message Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Compiling world_unlit.vert</Message>
+    </CustomBuild>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
