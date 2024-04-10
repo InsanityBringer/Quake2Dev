@@ -20,13 +20,68 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 */
 #pragma once
 
+//Simple matrix type is used for data that goes to vulkan.
+//In theory on practically all compiles a mat4 should be able to provide data for a mat4 in a shader, but it's weird since it's a complex type.
 typedef float matrix_t[16];
+
+class mat4
+{
+	float values[16];
+public:
+	mat4()
+	{
+		memset(values, 0, sizeof(values));
+	}
+
+	mat4& operator= (const mat4& other)
+	{
+		memcpy(values, other.values, sizeof(values));
+		return *this;
+	}
+
+	const float& operator[] (int index) const
+	{
+		return values[index];
+	}
+
+	float& operator[] (int index)
+	{
+		return values[index];
+	}
+
+	friend mat4& operator* (mat4& left, const mat4& other);
+	mat4& operator*= (const mat4& other);
+
+	void RotateAroundX(float ang);
+	void RotateAroundY(float ang);
+	void RotateAroundZ(float ang);
+	void Scale(float x, float y, float z);
+	void Translate(float x, float y, float z);
+
+	//Honestly I could stick this complex class into the projection block structure,
+	//and the layout will be correct, but just in case..
+	void ToMatrixt(matrix_t mat)
+	{
+		memcpy(mat, values, sizeof(matrix_t));
+	}
+
+	static mat4 MakeIdentity();
+	static mat4 MakeScale(float x, float y, float z);
+	static mat4 MakeRotateX(float ang);
+	static mat4 MakeRotateY(float ang);
+	static mat4 MakeRotateZ(float ang);
+	//static mat4 MakeRotate(float ang, float x, float y, float z);
+	static mat4 MakeTranslate(float x, float y, float z);
+};
+
+extern const mat4 mat4_identity;
 
 typedef struct
 {
 	matrix_t projection;
-	float x, y, z, x1;
-	float rotx, roty, rotz, x2;
+	matrix_t modelview;
+	vec3_t pos[3]; //sky needs the position directly, blargh
+	float pad;
 } projectionblock_t;
 
 extern vkdescriptorset_t ortho_descriptor_set;

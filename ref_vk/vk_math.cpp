@@ -18,6 +18,8 @@ Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
 
 */
 
+#include <cmath>
+#include <intrin.h>
 #include "vk_local.h"
 #include "vk_math.h"
 
@@ -36,6 +38,10 @@ vkallocinfo_t persp_memory;
 vkdescriptorset_t persp_descriptor_set;
 
 extern VkBuffer globals_buffer;
+
+const mat4 mat4_identity = mat4::MakeIdentity();
+
+#define DEG2RAD( a ) ( a * M_PI ) / 180.0F
 
 void VK_CreatePerspBuffer()
 {
@@ -212,13 +218,27 @@ void VK_Perspective(float left, float right, float top, float bottom, float znea
 void VK_UpdateCamera(float* pos, float* rot)
 {
 	projectionblock_t* block = (projectionblock_t*)&((byte*)vk_state.device.host_visible_pool.host_ptr)[persp_memory.offset];
-	block->x = pos[0];
+
+	mat4 modelview = mat4_identity;
+	modelview.RotateAroundX(-90);
+	modelview.RotateAroundZ(90);
+	modelview.RotateAroundX(rot[2]);
+	modelview.RotateAroundY(rot[0]);
+	modelview.RotateAroundZ(-rot[1]);
+	modelview.Translate(-pos[0], -pos[1], -pos[2]);
+
+	modelview.ToMatrixt(block->modelview);
+
+	//Was trying to avoid sending this, but the sky shader needs it to calculate a direction.
+	memcpy(block->pos, pos, sizeof(vec3_t));
+
+	/*(block->x = pos[0];
 	block->y = pos[1];
 	block->z = pos[2];
 
 	block->rotx = rot[0];
 	block->roty = rot[1];
-	block->rotz = rot[2];
+	block->rotz = rot[2];*/
 
 	if (vk_state.device.host_visible_pool.host_ptr_incoherent)
 	{
@@ -229,4 +249,173 @@ void VK_UpdateCamera(float* pos, float* rot)
 		range.size = sizeof(projectionblock_t);
 		vkFlushMappedMemoryRanges(vk_state.device.handle, 1, &range);
 	}
+}
+
+/*void Mat4Rotate(matrix_t mat, float angle, float x, float y, float z)
+{
+	matrix_t rotmat = { 0 };
+	rotmat[15] = 1;
+	angle = DEG2RAD(angle);
+	float c = cos(angle);
+	float s = sin(angle);
+	float xx = x * x;
+	float xy = x * y;
+	float xz = x * z;
+	float yy = y * y;
+	float yz = y * z;
+	float zz = z * z;
+	float xs = x * s;
+	float ys = y * s;
+	float zs = z * s;
+	float oneminusc = (1 - c);
+
+	float length = sqrt(x * x + y * y + z * z);
+	//don't do anything on a null vector. 
+	if (length == 0)
+		return;
+
+	if (std::abs(length - 1) > 1e-4)
+	{
+		x /= length; y /= length; z /= length;
+	}
+
+	rotmat[0] = xx * oneminusc + c;
+	rotmat[1] = xy * oneminusc + zs;
+	rotmat[2] = xz * oneminusc - ys;
+
+	rotmat[4] = xy * oneminusc - zs;
+	rotmat[5] = yy * oneminusc + c;
+	rotmat[6] = yz * oneminusc + xs;
+
+	rotmat[8] = xz * oneminusc + ys;
+	rotmat[9] = yz * oneminusc - xs;
+	rotmat[10] = zz * oneminusc + c;
+
+	Mat4Multiply(mat, rotmat);
+}*/
+
+mat4& operator*(mat4& left, const mat4& other)
+{
+	left *= other;
+	return left;
+}
+
+mat4& mat4::operator*=(const mat4& right)
+{
+	//The same 4 columns are always used, so load them first.
+	__m128 columns[4];
+	__m128 rightvalue[4];
+	__m128 res;
+	columns[0] = _mm_loadu_ps(&values[0]);
+	columns[1] = _mm_loadu_ps(&values[4]);
+	columns[2] = _mm_loadu_ps(&values[8]);
+	columns[3] = _mm_loadu_ps(&values[12]);
+
+	//Each column will broadcast 4 values from the right matrix and multiply each column by it, 
+	// and then sum up the resultant vectors to form a result column. 
+	for (int i = 0; i < 4; i++)
+	{
+		rightvalue[0] = _mm_mul_ps(_mm_load_ps1(&right.values[i * 4 + 0]), columns[0]);
+		rightvalue[1] = _mm_mul_ps(_mm_load_ps1(&right.values[i * 4 + 1]), columns[1]);
+		rightvalue[2] = _mm_mul_ps(_mm_load_ps1(&right.values[i * 4 + 2]), columns[2]);
+		rightvalue[3] = _mm_mul_ps(_mm_load_ps1(&right.values[i * 4 + 3]), columns[3]);
+
+		//From some quick profiling this seems slightly faster than nesting all the adds. 
+		res = _mm_add_ps(rightvalue[0], rightvalue[1]);
+		res = _mm_add_ps(res, rightvalue[2]);
+		res = _mm_add_ps(res, rightvalue[3]);
+
+		_mm_storeu_ps(&values[i * 4], res);
+	}
+
+	return *this;
+}
+
+void mat4::RotateAroundX(float ang)
+{
+	*this *= mat4::MakeRotateX(ang);
+}
+
+void mat4::RotateAroundY(float ang)
+{
+	*this *= mat4::MakeRotateY(ang);
+}
+
+void mat4::RotateAroundZ(float ang)
+{
+	*this *= mat4::MakeRotateZ(ang);
+}
+
+void mat4::Scale(float x, float y, float z)
+{
+	*this *= mat4::MakeScale(x, y, z);
+}
+
+void mat4::Translate(float x, float y, float z)
+{
+	*this *= mat4::MakeTranslate(x, y, z);
+}
+
+mat4 mat4::MakeIdentity()
+{
+	mat4 mat;
+	mat.values[0] = mat.values[5] = mat.values[10] = mat.values[15] = 1;
+	return mat;
+}
+
+mat4 mat4::MakeScale(float x, float y, float z)
+{
+	mat4 mat;
+	mat.values[0] = x;
+	mat.values[5] = y;
+	mat.values[10] = z;
+	mat.values[15] = 1;
+	return mat;
+}
+
+mat4 mat4::MakeRotateX(float ang)
+{
+	mat4 mat;
+	ang = DEG2RAD(ang);
+	mat.values[0] = mat.values[15] = 1;
+	mat.values[5] = cos(ang);
+	mat.values[6] = -sin(ang);
+	mat.values[9] = sin(ang);
+	mat.values[10] = cos(ang);
+	return mat;
+}
+
+mat4 mat4::MakeRotateY(float ang)
+{
+	mat4 mat;
+	ang = DEG2RAD(ang);
+	mat.values[5] = mat.values[15] = 1;
+	mat.values[0] = cos(ang);
+	mat.values[2] = sin(ang);
+	mat.values[8] = -sin(ang);
+	mat.values[10] = cos(ang);
+	return mat;
+}
+
+mat4 mat4::MakeRotateZ(float ang)
+{
+	mat4 mat;
+	ang = DEG2RAD(ang);
+	mat.values[10] = mat.values[15] = 1;
+	mat.values[0] = cos(ang);
+	mat.values[1] = sin(ang);
+	mat.values[4] = -sin(ang);
+	mat.values[5] = cos(ang);
+	return mat;
+}
+
+mat4 mat4::MakeTranslate(float x, float y, float z)
+{
+	mat4 mat = mat4_identity;
+
+	mat.values[12] = x;
+	mat.values[13] = y;
+	mat.values[14] = z;
+
+	return mat;
 }

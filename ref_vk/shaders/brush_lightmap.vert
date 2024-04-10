@@ -3,8 +3,7 @@
 layout(set = 0, binding = 0) uniform projection_modelviewtype
 {
 	mat4 projection;
-	vec4 translation;
-	vec4 rotation;
+	mat4 modelview;
 } projection_modelview;
 
 layout(set = 3, binding = 0) uniform modelview_type
@@ -71,12 +70,7 @@ void main()
 		* rotationAroundY(-radians(localmodelview.rotation.x))
 		* rotationAroundX(-radians(localmodelview.rotation.z));
 		
-	mat4 modelview = rotationAroundX(radians(-90))
-		* rotationAroundZ(radians(90)) 
-		* rotationAroundX(radians(projection_modelview.rotation.z)) 
-		* rotationAroundY(radians(projection_modelview.rotation.x)) 
-		* rotationAroundZ(-radians(projection_modelview.rotation.y))
-		* translation(-projection_modelview.translation.xyz) * localmodelview;
+	mat4 modelview = projection_modelview.modelview * localmodelview;
 		
 	outWorldPos = (localmodelview * vec4(position, 1.0)).xyz;
 	

@@ -3,8 +3,7 @@
 layout(set = 0, binding = 0) uniform projection_modelviewtype
 {
 	mat4 projection;
-	vec4 translation;
-	vec4 rotation;
+	mat4 modelview;
 } projection_modelview;
 
 struct dlight
@@ -137,13 +136,6 @@ void main()
 		
 	mat4 lmodelview = translation(localmodelview.translation.xyz)
 		* rotation_matrix;
-		
-	mat4 modelview = rotationAroundX(radians(-90))
-		* rotationAroundZ(radians(90)) 
-		* rotationAroundX(radians(projection_modelview.rotation.z)) 
-		* rotationAroundY(radians(projection_modelview.rotation.x)) 
-		* rotationAroundZ(-radians(projection_modelview.rotation.y))
-		* translation(-projection_modelview.translation.xyz);
 
 	vertex_entry vertex = vertbuffer.vertices[localmodelview.frameOffset + vertindex];
 	vertex_entry oldvertex = vertbuffer.vertices[localmodelview.oldFrameOffset + vertindex];
@@ -152,7 +144,7 @@ void main()
 	vec3 lerpnormal = normalize(mix(oldvertex.normal, vertex.normal, 1.0 - localmodelview.backlerp)); //no idea if this is an ideal way to interpolate normals. 
 	
 	vec4 pos = lmodelview * vec4(lerpvertex + lerpnormal * localmodelview.swell, 1.0);
-	gl_Position = projection_modelview.projection * (modelview * pos);
+	gl_Position = projection_modelview.projection * (projection_modelview.modelview * pos);
 	
 	vec4 normal = rotation_matrix * vec4(lerpnormal, 1.0);
 	

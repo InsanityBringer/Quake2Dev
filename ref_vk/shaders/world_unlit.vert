@@ -3,8 +3,7 @@
 layout(set = 0, binding = 0) uniform projection_modelviewtype
 {
 	mat4 projection;
-	vec4 translation;
-	vec4 rotation;
+	mat4 modelview;
 } projection_modelview;
 
 layout(set = 0, binding = 1) uniform shaderglobalstype
@@ -65,13 +64,7 @@ mat4 translation(vec3 trans)
 
 void main()
 {
-	//This sucks a lot, I should optimize it, but for now replicate the soup of matrix ops id did
-	mat4 modelview = rotationAroundX(radians(-90))
-		* rotationAroundZ(radians(90)) 
-		* rotationAroundX(radians(projection_modelview.rotation.z)) 
-		* rotationAroundY(radians(projection_modelview.rotation.x)) 
-		* rotationAroundZ(-radians(projection_modelview.rotation.y))
-		* translation(-projection_modelview.translation.xyz)
+	mat4 modelview = projection_modelview.modelview
 		* translation(localmodelview.translation.xyz)
 		* rotationAroundZ(radians(localmodelview.rotation.y))
 		* rotationAroundY(-radians(localmodelview.rotation.x))
