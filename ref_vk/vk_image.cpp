@@ -1288,20 +1288,6 @@ image_t* VK_LoadPic(const char* name, byte* pic, int width, int height, imagetyp
 	if (!palette)
 		palette = d_8to24table;
 
-	//Test code, this should identify images by a hash. 
-	if (!strcmp(name, "textures/e2u2/flesh1_1.wal"))
-	{
-		byte* pictemp;
-		int widthtemp, heighttemp;
-
-		LoadPCX("models/objects/r_explode/skin1.pcx", &pictemp, &paltemp, &widthtemp, &heighttemp);
-		if (paltemp)
-			palette = (unsigned int*)paltemp;
-
-		if (pictemp)
-			free(pictemp);
-	}
-
 	// find a free image_t
 	for (i = 0, image = vktextures; i < numvktextures; i++, image++)
 	{
