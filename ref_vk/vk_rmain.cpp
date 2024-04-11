@@ -1116,6 +1116,9 @@ void R_BeginFrame(float camera_separation)
 }
 
 char perfbuffer[256];
+constexpr int NUM_FPS_SAMPLES = 16;
+double fpssamples[NUM_FPS_SAMPLES];
+int currentfpssample;
 
 //Unlike GL, this doesn't need to be owned by the platform specific code. 
 void R_EndFrame()
@@ -1137,7 +1140,16 @@ void R_EndFrame()
 		oldtime = newtime;
 
 		double time = delta / (double)timer_rate.QuadPart;
-		double fps = 1.0 / time;
+		fpssamples[currentfpssample] = 1.0 / time;
+		double fps = 0;
+
+		for (int i = 0; i < NUM_FPS_SAMPLES; i++)
+		{
+			fps += fpssamples[i];
+		}
+		fps /= NUM_FPS_SAMPLES;
+
+		currentfpssample = (currentfpssample + 1) % NUM_FPS_SAMPLES;
 
 		snprintf(perfbuffer, sizeof(perfbuffer) - 1, "fps: %.2f", fps);
 		perfbuffer[sizeof(perfbuffer) - 1] = '\0';
